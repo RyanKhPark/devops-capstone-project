@@ -35,8 +35,10 @@ class TestAccount(unittest.TestCase):
 
     def setUp(self):
         """This runs before each test"""
-        db.session.query(Account).delete()  # clean up the last tests
-        db.session.commit()
+        self.client = app.test_client()
+        with app.app_context():
+            db.session.query(Account).delete()  # Clean up database
+            db.session.commit()
 
     def tearDown(self):
         """This runs after each test"""
@@ -178,5 +180,5 @@ class TestAccount(unittest.TestCase):
     
     def test_get_account_not_found(self):
         """It should not Read an Account that is not found"""
-        resp = self.client.get(f"{BASE_URL}/0")
-        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+        resp = self.client.get("/accounts/0")  # Use BASE_URL if defined elsewhere
+        self.assertEqual(resp.status_code, 404)  #
